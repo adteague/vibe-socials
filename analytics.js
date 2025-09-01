@@ -1,6 +1,5 @@
 // File path: /analytics.js
 document.addEventListener('DOMContentLoaded', async () => {
-  let currentPlatform = 'unknown';
   let posterData = null;
 
   // Tab switching
@@ -43,11 +42,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function loadPosterAnalytics() {
     try {
-      // Get current platform info
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      const hostname = new URL(tab.url).hostname;
-      currentPlatform = detectPlatform(hostname);
-
       // Get poster analytics from background script (computed from audit log)
       const response = await new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({ action: 'getPosterAnalytics' }, (response) => {
@@ -70,15 +64,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
       `;
     }
-  }
-
-  function detectPlatform(hostname) {
-    if (hostname.includes('twitter.com') || hostname.includes('x.com')) return 'twitter';
-    if (hostname.includes('facebook.com')) return 'facebook';
-    if (hostname.includes('instagram.com')) return 'instagram';
-    if (hostname.includes('linkedin.com')) return 'linkedin';
-    if (hostname.includes('reddit.com')) return 'reddit';
-    return 'unknown';
   }
 
   function displaySummary(data) {
@@ -109,32 +94,54 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
         <div class="stat-item">
           <div class="stat-value">${data.toxic.length}</div>
-          <div class="stat-label">Toxic Posters</div>
+          <div class="stat-label">Toxic Posters (5+ posts)</div>
         </div>
         <div class="stat-item">
           <div class="stat-value">${data.healthy.length}</div>
-          <div class="stat-label">Healthy Posters</div>
+          <div class="stat-label">Healthy Posters (5+ posts)</div>
         </div>
       </div>
     `;
   }
 
   function displayPosterLists(data) {
+    displayPosters('all-posters', data.all, 'neutral');
     displayPosters('toxic-posters', data.toxic, 'toxic');
     displayPosters('healthy-posters', data.healthy, 'healthy');
-    displayPosters('all-posters', data.all, 'neutral');
   }
 
   function displayPosters(containerId, posters, type) {
     const container = document.getElementById(containerId);
     
     if (posters.length === 0) {
-      container.innerHTML = `
-        <div class="empty-state">
-          <h3>No ${type} posters found yet</h3>
-          <p>Browse social media to build up analytics data!</p>
-        </div>
-      `;
+      let emptyMessage;
+      if (type === 'neutral') {
+        emptyMessage = `
+          <div class="empty-state">
+            <h3>No tracked posters found yet</h3>
+            <p>Browse social media to build up analytics data!</p>
+            <p><small>All users with 1+ analyzed posts will appear here</small></p>
+          </div>
+        `;
+      } else if (type === 'toxic') {
+        emptyMessage = `
+          <div class="empty-state">
+            <h3>No toxic posters found yet</h3>
+            <p>Users need 5+ posts with >50% filtered to appear here</p>
+            <p><small>Browse social media to build up analytics data</small></p>
+          </div>
+        `;
+      } else {
+        emptyMessage = `
+          <div class="empty-state">
+            <h3>No healthy posters found yet</h3>
+            <p>Users need 5+ posts with >80% allowed and average score >6 to appear here</p>
+            <p><small>Browse social media to build up analytics data</small></p>
+          </div>
+        `;
+      }
+      
+      container.innerHTML = emptyMessage;
       return;
     }
 
@@ -148,18 +155,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     const progressBarClass = type === 'toxic' ? 'toxic' : 'healthy';
     const progressWidth = type === 'toxic' ? filteredPercentage : allowedPercentage;
 
-    // Use the platform from poster data or fall back to detected platform
-    const posterPlatform = poster.platform || currentPlatform;
+    // Use the platform from poster data
+    const posterPlatform = poster.platform || 'unknown';
     const platformUrls = {
       twitter: `https://twitter.com/${poster.username}`,
       facebook: `https://facebook.com/${poster.username}`,
       instagram: `https://instagram.com/${poster.username}`,
       linkedin: `https://linkedin.com/in/${poster.username}`,
-      reddit: `https://reddit.com/user/${poster.username}`
+      reddit: `https://reddit.com/user/${poster.username}`,
+      unknown: '#'
     };
 
     const profileUrl = platformUrls[posterPlatform] || '#';
     const platformName = posterPlatform.charAt(0).toUpperCase() + posterPlatform.slice(1);
+
+    // Add indicator for users who haven't reached the 5-post threshold for categorization
+    const categorizationStatus = poster.postCount < 5 
+      ? `<div style="font-size: 11px; opacity: 0.7; text-align: center; margin: 5px 0; color: #fbbf24;">
+           ⚠️ Needs ${5 - poster.postCount} more posts for categorization
+         </div>`
+      : '';
 
     return `
       <div class="poster-card ${type}">
@@ -195,6 +210,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           Platform: ${platformName}
         </div>
 
+        ${categorizationStatus}
+
         <div class="action-buttons">
           <button class="action-btn profile-btn" onclick="openProfile('${profileUrl}')">
             👤 Profile
@@ -229,10 +246,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       facebook: `To block ${username} on Facebook:\n1. Go to their profile\n2. Click the three dots menu\n3. Select "Block"`,
       instagram: `To block @${username} on Instagram:\n1. Go to their profile\n2. Click "Following" or "Follow"\n3. Select "Block"`,
       linkedin: `To block ${username} on LinkedIn:\n1. Go to their profile\n2. Click "More" button\n3. Select "Block or report"`,
-      reddit: `To block u/${username} on Reddit:\n1. Go to their profile\n2. Click "More Options"\n3. Select "Block User"`
+      reddit: `To block u/${username} on Reddit:\n1. Go to their profile\n2. Click "More Options"\n3. Select "Block User"`,
+      unknown: `To block this user, visit their profile and look for block/mute options.`
     };
 
-    alert(instructions[platform] || `To block this user, visit their profile and look for block/mute options.`);
+    alert(instructions[platform] || instructions.unknown);
   };
 
   function showNotification(message) {
