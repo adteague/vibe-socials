@@ -146,6 +146,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     container.innerHTML = posters.map(poster => createPosterCard(poster, type)).join('');
+    
+    // Add event listeners to action buttons
+    container.querySelectorAll('.action-btn').forEach(button => {
+      button.addEventListener('click', handleButtonClick);
+    });
   }
 
   function createPosterCard(poster, type) {
@@ -213,13 +218,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         ${categorizationStatus}
 
         <div class="action-buttons">
-          <button class="action-btn profile-btn" onclick="openProfile('${profileUrl}')">
+          <button class="action-btn profile-btn" data-action="profile" data-url="${profileUrl}">
             👤 Profile
           </button>
-          <button class="action-btn mute-btn" onclick="copyUsername('@${poster.username}')">
+          <button class="action-btn mute-btn" data-action="copy" data-username="@${poster.username}">
             🔇 Copy @
           </button>
-          <button class="action-btn block-btn" onclick="showBlockInstructions('${poster.username}', '${posterPlatform}')">
+          <button class="action-btn block-btn" data-action="block" data-username="${poster.username}" data-platform="${posterPlatform}">
             🚫 Block Info
           </button>
         </div>
@@ -227,20 +232,37 @@ document.addEventListener('DOMContentLoaded', async () => {
     `;
   }
 
-  // Global functions for button actions
-  window.openProfile = function(url) {
-    if (url !== '#') {
-      chrome.tabs.create({ url });
+  function handleButtonClick(event) {
+    const button = event.target;
+    const action = button.getAttribute('data-action');
+    const url = button.getAttribute('data-url');
+    const username = button.getAttribute('data-username');
+    const platform = button.getAttribute('data-platform');
+
+    switch(action) {
+      case 'profile':
+        if (url && url !== '#') {
+          chrome.tabs.create({ url });
+        }
+        break;
+        
+      case 'copy':
+        if (username) {
+          navigator.clipboard.writeText(username).then(() => {
+            showNotification('Username copied to clipboard!');
+          });
+        }
+        break;
+        
+      case 'block':
+        if (username && platform) {
+          showBlockInstructions(username, platform);
+        }
+        break;
     }
-  };
+  }
 
-  window.copyUsername = function(username) {
-    navigator.clipboard.writeText(username).then(() => {
-      showNotification('Username copied to clipboard!');
-    });
-  };
-
-  window.showBlockInstructions = function(username, platform) {
+  function showBlockInstructions(username, platform) {
     const instructions = {
       twitter: `To block @${username} on Twitter/X:\n1. Go to their profile\n2. Click the three dots menu\n3. Select "Block @${username}"`,
       facebook: `To block ${username} on Facebook:\n1. Go to their profile\n2. Click the three dots menu\n3. Select "Block"`,
@@ -251,7 +273,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     alert(instructions[platform] || instructions.unknown);
-  };
+  }
 
   function showNotification(message) {
     const notification = document.createElement('div');
