@@ -356,17 +356,19 @@ Filter Level Guidelines:
     });
 
     // Convert to arrays and categorize
+    // ALL TRACKED: Show everyone with 1+ posts (no minimum)
     const allPosters = Object.values(posterStats)
-      .filter(stats => stats.postCount >= 2) // Only show users with 2+ posts
       .sort((a, b) => b.postCount - a.postCount); // Sort by post count
 
+    // TOXIC: Requires 5+ posts AND >50% filtered
     const toxicPosters = allPosters
-      .filter(stats => (stats.filtered / stats.postCount) > 0.5) // >50% filtered
+      .filter(stats => stats.postCount >= 5 && (stats.filtered / stats.postCount) > 0.5)
       .sort((a, b) => (b.filtered / b.postCount) - (a.filtered / a.postCount))
       .slice(0, 20);
 
+    // HEALTHY: Requires 5+ posts AND >80% allowed AND avg score >6
     const healthyPosters = allPosters
-      .filter(stats => (stats.allowed / stats.postCount) > 0.8 && stats.averageScore > 6) // >80% allowed, avg score >6
+      .filter(stats => stats.postCount >= 5 && (stats.allowed / stats.postCount) > 0.8 && stats.averageScore > 6)
       .sort((a, b) => b.averageScore - a.averageScore)
       .slice(0, 20);
 
