@@ -1,0 +1,307 @@
+<!-- File path: /audit.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Positive Vibes Filter - Audit Log</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: white;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+    .search-controls {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .search-input {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 14px;
+    }
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    .search-btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(34, 197, 94, 0.8);
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .search-btn:hover {
+      background: rgba(34, 197, 94, 1);
+    }
+    .filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .filter-select {
+      padding: 8px 12px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 12px;
+    }
+    .filter-select option {
+      background: #764ba2;
+      color: white;
+    }
+    .audit-entry {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-left: 4px solid transparent;
+      transition: all 0.2s ease;
+    }
+    .audit-entry:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .audit-entry.filtered {
+      border-left-color: #ef4444;
+    }
+    .audit-entry.allowed {
+      border-left-color: #22c55e;
+    }
+    .audit-entry.error {
+      border-left-color: #f59e0b;
+    }
+    .entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .entry-meta {
+      display: flex;
+      gap: 15px;
+      font-size: 12px;
+      opacity: 0.8;
+      flex-wrap: wrap;
+    }
+    .entry-status {
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .entry-status.filtered {
+      color: #fca5a5;
+    }
+    .entry-status.allowed {
+      color: #86efac;
+    }
+    .entry-status.error {
+      color: #fbbf24;
+    }
+    .content-section {
+      margin-bottom: 15px;
+    }
+    .section-title {
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      opacity: 0.8;
+      margin-bottom: 8px;
+    }
+    .content-text {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+    .response-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .response-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .response-value {
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .response-label {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+    .expandable {
+      cursor: pointer;
+      user-select: none;
+    }
+    .expandable:hover {
+      opacity: 0.8;
+    }
+    .expanded-content {
+      display: none;
+      margin-top: 10px;
+    }
+    .expanded-content.show {
+      display: block;
+    }
+    .prompt-text {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      line-height: 1.3;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .controls {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .control-btn {
+      background: rgba(239, 68, 68, 0.8);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 0 5px;
+    }
+    .control-btn:hover {
+      background: rgba(239, 68, 68, 1);
+    }
+    .load-more {
+      background: rgba(59, 130, 246, 0.8);
+    }
+    .load-more:hover {
+      background: rgba(59, 130, 246, 1);
+    }
+    .empty-state {
+      text-align: center;
+      padding: 60px;
+      opacity: 0.7;
+    }
+    .summary-stats {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+    }
+    .summary-item {
+      flex: 1;
+    }
+    .summary-value {
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .summary-label {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 AI Analysis Audit Log</h1>
+    
+    <div class="summary-stats" id="summaryStats">
+      Loading summary...
+    </div>
+
+    <div class="search-controls">
+      <div class="search-box">
+        <input type="text" class="search-input" id="searchInput" 
+               placeholder="Search by content, poster, reason, or any keyword... (fuzzy search enabled)">
+        <button class="search-btn" id="searchBtn">🔍 Search</button>
+        <button class="search-btn" id="clearSearch">✖️ Clear</button>
+      </div>
+      
+      <div class="filters">
+        <select class="filter-select" id="statusFilter">
+          <option value="">All Statuses</option>
+          <option value="filtered">Filtered Only</option>
+          <option value="allowed">Allowed Only</option>
+          <option value="error">Errors Only</option>
+        </select>
+        
+        <select class="filter-select" id="platformFilter">
+          <option value="">All Platforms</option>
+          <option value="twitter">Twitter/X</option>
+          <option value="facebook">Facebook</option>
+          <option value="instagram">Instagram</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="reddit">Reddit</option>
+        </select>
+        
+        <select class="filter-select" id="providerFilter">
+          <option value="">All AI Providers</option>
+          <option value="openai">OpenAI</option>
+          <option value="grok">Grok</option>
+        </select>
+
+        <select class="filter-select" id="timeFilter">
+          <option value="">All Time</option>
+          <option value="1h">Last Hour</option>
+          <option value="24h">Last 24 Hours</option>
+          <option value="7d">Last 7 Days</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="control-btn load-more" id="loadMore">📄 Load More (50)</button>
+      <button class="control-btn" id="clearLog">🗑️ Clear All Audit Data</button>
+    </div>
+
+    <div id="auditEntries">
+      Loading audit log...
+    </div>
+  </div>
+
+  <script src="audit.js"></script>
+</body>
+</html>

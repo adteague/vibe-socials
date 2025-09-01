@@ -1,0 +1,265 @@
+<!-- File path: /options.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Positive Vibes Filter - Settings</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: white;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+    .setting-group {
+      margin-bottom: 25px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    select, input, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    select option {
+      background: #764ba2;
+      color: white;
+    }
+    input::placeholder, textarea::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    button {
+      background: rgba(34, 197, 94, 0.8);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    button:hover {
+      background: rgba(34, 197, 94, 1);
+      transform: translateY(-1px);
+    }
+    .description {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-top: 5px;
+    }
+    .status {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 12px;
+    }
+    .status.success {
+      background: rgba(34, 197, 94, 0.3);
+    }
+    .status.error {
+      background: rgba(239, 68, 68, 0.3);
+    }
+    .api-info {
+      background: rgba(59, 130, 246, 0.2);
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+    .api-info a {
+      color: #93c5fd;
+      text-decoration: none;
+    }
+    .api-info a:hover {
+      text-decoration: underline;
+    }
+    .prompt-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .prompt-controls button {
+      flex: 1;
+      background: rgba(59, 130, 246, 0.8);
+      font-size: 12px;
+      padding: 8px;
+    }
+    .prompt-controls button:hover {
+      background: rgba(59, 130, 246, 1);
+    }
+    .prompt-display {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .prompt-header {
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #93c5fd;
+    }
+    .prompt-display pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-size: 12px;
+      line-height: 1.4;
+      margin: 0;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    code {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-size: 11px;
+    }
+    .transparency-note {
+      background: rgba(34, 197, 94, 0.2);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      border-left: 4px solid #22c55e;
+    }
+    .prompt-preview {
+      background: rgba(59, 130, 246, 0.2);
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 10px;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>✨ Positive Vibes Filter Settings</h1>
+    
+    <div class="transparency-note">
+      <strong>🔍 Full Transparency:</strong> This extension gives you complete visibility into how your content is analyzed. 
+      You can see and modify the exact prompt sent to the AI, ensuring you have full control over the filtering criteria.
+    </div>
+    
+    <div class="setting-group">
+      <label for="apiProvider">AI Provider</label>
+      <select id="apiProvider">
+        <option value="openai">OpenAI</option>
+        <option value="grok">Grok (X.AI)</option>
+      </select>
+      <div class="description">Choose your preferred AI service for content analysis</div>
+    </div>
+
+    <div class="setting-group" id="modelSelection" style="display: none;">
+      <label for="aiModel">AI Model</label>
+      <select id="aiModel">
+        <option value="gpt-4o-mini">GPT-4o Mini (Fast & Cheap)</option>
+        <option value="gpt-4o">GPT-4o (Balanced)</option>
+        <option value="gpt-4-turbo">GPT-4 Turbo (High Quality)</option>
+        <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fastest)</option>
+        <option value="grok-beta">Grok Beta</option>
+      </select>
+      <div class="description">
+        <strong>Model Comparison:</strong><br>
+        • <strong>GPT-4o Mini:</strong> Fastest & cheapest, great for high-volume filtering<br>
+        • <strong>GPT-3.5 Turbo:</strong> Very fast, good accuracy, cost-effective<br>
+        • <strong>GPT-4o:</strong> Balanced speed and accuracy<br>
+        • <strong>GPT-4 Turbo:</strong> Highest accuracy, slower, more expensive
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <label for="apiKey">API Key</label>
+      <input type="password" id="apiKey" placeholder="Enter your API key">
+      <div class="description">
+        Your API key is stored locally and never shared. 
+      </div>
+      <div class="api-info">
+        <strong>Get your API keys:</strong><br>
+        OpenAI: <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a><br>
+        Grok: <a href="https://console.x.ai/" target="_blank">console.x.ai</a>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <label for="filterStrength">Default Filter Strength</label>
+      <select id="filterStrength">
+        <option value="low">Low - Only extreme negativity</option>
+        <option value="medium">Medium - General negative content</option>
+        <option value="high">High - Only positive content</option>
+      </select>
+      <div class="description">How strictly should content be filtered?</div>
+    </div>
+
+    <div class="setting-group">
+      <label>🔍 Current Active Prompt</label>
+      <div class="prompt-display">
+        <div class="prompt-header">This is the exact prompt being sent to analyze your posts:</div>
+        <pre id="activePromptText">Loading current prompt...</pre>
+      </div>
+      <div class="description">
+        This shows the actual prompt with your current settings. Posts are analyzed using this exact text.
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <label for="customPrompt">AI Analysis Prompt</label>
+      <div class="prompt-controls">
+        <button type="button" id="showDefaultPrompt">👁️ View Default Prompt</button>
+        <button type="button" id="resetPrompt">🔄 Reset to Default</button>
+      </div>
+      <div id="defaultPromptDisplay" class="prompt-display" style="display: none;">
+        <div class="prompt-header">Default Prompt Template:</div>
+        <pre id="defaultPromptText"></pre>
+      </div>
+      <textarea id="customPrompt" rows="8" placeholder="Leave empty to use default prompt, or create your custom analysis prompt..."></textarea>
+      <div class="description">
+        <strong>Customize how the AI analyzes content for mental health impact.</strong><br>
+        Use these placeholders in your custom prompt:<br>
+        • <code>{{CONTENT}}</code> - The post content to analyze<br>
+        • <code>{{FILTER_STRENGTH}}</code> - Current filter setting (low/medium/high)<br>
+        <br>
+        Your prompt should instruct the AI to return JSON with: shouldShow (true/false), score (1-10), and reason (string).
+      </div>
+      
+      <div class="prompt-preview" id="promptPreview" style="display: none;">
+        <div class="prompt-header">Live Preview - Prompt That Will Be Sent:</div>
+        <pre id="promptPreviewText"></pre>
+      </div>
+    </div>
+
+    <button id="saveSettings">💾 Save Settings</button>
+    <button id="testApi" style="margin-left: 10px;">🧪 Test API Connection</button>
+    
+    <div id="statusMessage"></div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

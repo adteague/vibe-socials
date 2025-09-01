@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "Positive Vibes Social Filter",
+  "version": "1.0",
+  "description": "Filters social media content based on positive mental impact using AI",
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "*://twitter.com/*",
+    "*://x.com/*",
+    "*://facebook.com/*",
+    "*://instagram.com/*",
+    "*://linkedin.com/*",
+    "*://reddit.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://twitter.com/*",
+        "*://x.com/*",
+        "*://facebook.com/*",
+        "*://instagram.com/*",
+        "*://linkedin.com/*",
+        "*://reddit.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Positive Vibes Filter"
+  },
+  "options_page": "options.html",
+  "web_accessible_resources": [
+    {
+      "resources": ["analytics.html", "audit.html"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

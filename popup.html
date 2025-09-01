@@ -1,0 +1,134 @@
+<!-- File path: /popup.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 300px;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    h1 {
+      margin: 0 0 20px 0;
+      font-size: 18px;
+      text-align: center;
+    }
+    .control-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 12px;
+      opacity: 0.9;
+    }
+    select, button {
+      width: 100%;
+      padding: 8px;
+      border: none;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      backdrop-filter: blur(10px);
+    }
+    select option {
+      background: #764ba2;
+      color: white;
+    }
+    button {
+      background: rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    button:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+    .toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .switch {
+      position: relative;
+      width: 50px;
+      height: 25px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 25px;
+      cursor: pointer;
+    }
+    .switch.active {
+      background: rgba(34, 197, 94, 0.8);
+    }
+    .slider {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 21px;
+      height: 21px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+    .switch.active .slider {
+      transform: translateX(25px);
+    }
+    .stats {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>✨ Positive Vibes Filter</h1>
+  
+  <div class="control-group">
+    <div class="toggle">
+      <label>Filter Enabled</label>
+      <div class="switch" id="enabledSwitch">
+        <div class="slider"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label for="filterStrength">Filter Strength</label>
+    <select id="filterStrength">
+      <option value="low">Low - Block extreme negativity</option>
+      <option value="medium">Medium - Block general negativity</option>
+      <option value="high">High - Only show positive content</option>
+    </select>
+  </div>
+
+  <div class="stats" id="stats">
+    Loading stats...
+  </div>
+
+  <div class="control-group">
+    <div id="promptStatus" style="font-size: 11px; text-align: center; opacity: 0.8; margin-bottom: 10px;">
+      Loading prompt status...
+    </div>
+  </div>
+
+  <div class="control-group">
+    <button id="openOptions">⚙️ Settings</button>
+  </div>
+
+  <div class="control-group">
+    <button id="posterAnalytics">📊 Poster Analytics</button>
+  </div>
+
+  <div class="control-group">
+    <button id="auditLog">📜 Audit Log</button>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

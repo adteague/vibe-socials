@@ -1,0 +1,226 @@
+<!-- File path: /analytics.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Positive Vibes Filter - Poster Analytics</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: white;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 5px;
+    }
+    .tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      font-weight: 600;
+    }
+    .tab.active {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .poster-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .poster-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+    }
+    .poster-card:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+    .poster-card.toxic {
+      border-left: 4px solid #ef4444;
+    }
+    .poster-card.healthy {
+      border-left: 4px solid #22c55e;
+    }
+    .poster-name {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 10px;
+      word-break: break-word;
+    }
+    .poster-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .stat-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 8px;
+      border-radius: 6px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .stat-label {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    .progress-fill {
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+    .progress-fill.toxic {
+      background: #ef4444;
+    }
+    .progress-fill.healthy {
+      background: #22c55e;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .action-btn {
+      flex: 1;
+      padding: 6px 8px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .block-btn {
+      background: rgba(239, 68, 68, 0.8);
+      color: white;
+    }
+    .block-btn:hover {
+      background: rgba(239, 68, 68, 1);
+    }
+    .mute-btn {
+      background: rgba(249, 115, 22, 0.8);
+      color: white;
+    }
+    .mute-btn:hover {
+      background: rgba(249, 115, 22, 1);
+    }
+    .profile-btn {
+      background: rgba(59, 130, 246, 0.8);
+      color: white;
+    }
+    .profile-btn:hover {
+      background: rgba(59, 130, 246, 1);
+    }
+    .summary {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .controls {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .reset-btn {
+      background: rgba(239, 68, 68, 0.8);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .reset-btn:hover {
+      background: rgba(239, 68, 68, 1);
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Poster Analytics</h1>
+    
+    <div class="summary" id="summary">
+      Loading analytics...
+    </div>
+
+    <div class="controls">
+      <button class="reset-btn" id="resetStats">🗑️ Reset All Stats</button>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="toxic">🚨 Toxic Posters</div>
+      <div class="tab" data-tab="healthy">✨ Healthy Posters</div>
+      <div class="tab" data-tab="all">📋 All Tracked</div>
+    </div>
+
+    <div class="tab-content active" id="toxic-content">
+      <div id="toxic-posters" class="poster-grid"></div>
+    </div>
+
+    <div class="tab-content" id="healthy-content">
+      <div id="healthy-posters" class="poster-grid"></div>
+    </div>
+
+    <div class="tab-content" id="all-content">
+      <div id="all-posters" class="poster-grid"></div>
+    </div>
+  </div>
+
+  <script src="analytics.js"></script>
+</body>
+</html>
